@@ -8,6 +8,10 @@ import com.dimata.service.general.repository.BorrowRepository;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -36,6 +40,9 @@ public class BorrowCrude {
         var borrow = new Borrow();
         borrow.book = book;
         borrow.member = member;
+        borrow.borrowDate = body.borrowDate();
+        borrow.term = body.term();
+        borrow.returnDate = calculateReturnDate(body.term(), body.borrowDate());
         borrow.persist();
 
         return borrow;
@@ -44,6 +51,18 @@ public class BorrowCrude {
     public List<Borrow> listAll()
     {
         return borrowRepository.listAll();
+    }
+
+    public Date calculateReturnDate(Integer term, Date borrowDate)
+    {
+        LocalDate newBorrowDate = borrowDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        LocalDate returnDate = newBorrowDate.plusDays(term);
+
+        Instant instant = returnDate.atStartOfDay(ZoneId.systemDefault()).toInstant();
+
+        Date newReturnDate = Date.from(instant);
+
+        return newReturnDate;
     }
 
 }

@@ -58,6 +58,11 @@ public class MemberCrude {
         return memberRepository.listAll();
     }
 
-    public
+    public List<Member> search(String keyword)
+    {
+        return memberRepository.find(
+                "name LIKE CONCAT('%', ?1,'%') OR address LIKE CONCAT('', ?1, '')"
+                , keyword).list();
+    }
 
 }

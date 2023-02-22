@@ -5,34 +5,28 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Date;
 
 @Entity
-@Table(name = "borrows")
-public class Borrow extends PanacheEntityBase {
+@Table(name = "returns")
+public class Return extends PanacheEntityBase {
 
     @Id
-    @Column(name = "borrow_id")
     @GeneratedValue(generator = "dimata_id_gen")
+    @Column(name = "return_id")
     public Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "book_id")
-    public Book book;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id")
-    public Member member;
-
-
-    @Column(name = "borrow_date")
-    public Date borrowDate;
+    @JoinColumn(name = "borrow_id")
+    public Borrow borrow;
 
     @Column(name = "return_date")
     public Date returnDate;
 
-    public Integer term;
+    @Column(name = "late_fee")
+    public BigDecimal lateFee;
 
     @CreationTimestamp
     @Column(name = "created_at")

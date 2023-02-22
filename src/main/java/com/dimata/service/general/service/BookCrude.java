@@ -68,8 +68,8 @@ public class BookCrude {
     public List<Book> search(String keyword)
     {
         return bookRepository.find(
-                "name LIKE CONCAT('%', ?1, '%') OR description LIKE CONCAT('%', ?1,'%') OR author LIKE CONCAT('%', ?1, '%')", keyword
-        ).list();
+                "name LIKE CONCAT('%', ?1, '%') OR description LIKE CONCAT('%', ?1,'%') OR author LIKE CONCAT('%', ?1, '%')"
+                , keyword).list();
     }
 
     public void deleteById(long id)

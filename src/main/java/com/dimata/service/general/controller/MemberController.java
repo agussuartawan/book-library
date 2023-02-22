@@ -42,9 +42,9 @@ public class MemberController {
 
     @GET
     @Path("/find")
-    public List<Member> findByName(@RestQuery String name)
+    public List<Member> search(@RestQuery String keyword)
     {
-        return Member.findByName(name);
+        return memberCrude.search(keyword);
     }
 
     @GET
