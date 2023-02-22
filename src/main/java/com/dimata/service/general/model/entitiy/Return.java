@@ -13,6 +13,8 @@ import java.util.Date;
 @Table(name = "returns")
 public class Return extends PanacheEntityBase {
 
+    public static final BigDecimal LATE_FEE_PERDAY = new BigDecimal(10000);
+
     @Id
     @GeneratedValue(generator = "dimata_id_gen")
     @Column(name = "return_id")
