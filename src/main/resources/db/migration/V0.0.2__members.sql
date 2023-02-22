@@ -1,0 +1,7 @@
+CREATE TABLE members (
+    MEMBER_ID bigint PRIMARY KEY,
+    NAME varchar(255),
+    ADDRESS varchar(255),
+    CREATED_AT DATETIME,
+    UPDATED_AT DATETIME
+);

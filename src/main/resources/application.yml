@@ -1,0 +1,25 @@
+"%dev":
+  quarkus:
+    http:
+      port: 8082
+    hibernate-orm:
+      log:
+        sql: false
+    flyway:
+      migrate-at-start: true
+      clean-on-validation-error: true
+    datasource:
+      db-kind: mysql
+      username: root
+      password:
+      jdbc:
+        url: jdbc:mysql://localhost:3306/perpus
+
+"%staging":
+  quarkus:
+    datasource:
+      db-kind: mysql
+      username: root
+      password:
+      jdbc:
+        url: jdbc:mysql://localhost:3306/perpus
