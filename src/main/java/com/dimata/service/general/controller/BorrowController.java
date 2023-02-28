@@ -1,5 +1,6 @@
 package com.dimata.service.general.controller;
 
+import com.dimata.service.general.dto.ResponseData;
 import com.dimata.service.general.model.body.BorrowBody;
 import com.dimata.service.general.model.entitiy.Borrow;
 import com.dimata.service.general.service.BorrowCrude;
@@ -16,6 +17,8 @@ public class BorrowController {
 
     @Inject
     BorrowCrude borrowCrude;
+    @Inject
+    ResponseData responseData;
 
     @POST
     @Transactional
@@ -24,10 +27,13 @@ public class BorrowController {
         return borrowCrude.create(body);
     }
 
-    @GET
-    public List<Borrow> getAll()
+    /*@GET
+    public ResponseData getAll()
     {
-        return borrowCrude.listAll();
-    }
+        responseData.status = true;
+        responseData.messages = "Book borrow data.";
+        responseData.payload = borrowCrude.listAll();
+        return responseData;
+    }*/
 
 }

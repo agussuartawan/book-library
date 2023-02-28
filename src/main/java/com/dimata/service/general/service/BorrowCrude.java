@@ -4,7 +4,9 @@ import com.dimata.service.general.model.body.BorrowBody;
 import com.dimata.service.general.model.entitiy.Book;
 import com.dimata.service.general.model.entitiy.Borrow;
 import com.dimata.service.general.model.entitiy.Member;
+import com.dimata.service.general.repository.BookRepository;
 import com.dimata.service.general.repository.BorrowRepository;
+import com.dimata.service.general.repository.MemberRepository;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -20,6 +22,10 @@ public class BorrowCrude {
 
     @Inject
     BorrowRepository borrowRepository;
+    @Inject
+    BookRepository bookRepository;
+    @Inject
+    MemberRepository memberRepository;
 
     public Borrow create(BorrowBody body)
     {
@@ -30,10 +36,10 @@ public class BorrowCrude {
             throw new IllegalArgumentException("Borrow not valid.");
         }
 
-        var book = Book.findByIdOptional(body.bookId())
+        var book = bookRepository.findByIdOptional(body.bookId())
                 .map(Book.class::cast)
                 .orElseThrow();
-        var member = Member.findByIdOptional(body.memberId())
+        var member = memberRepository.findByIdOptional(body.memberId())
                 .map(Member.class::cast)
                 .orElseThrow();
 
@@ -60,9 +66,7 @@ public class BorrowCrude {
 
         Instant instant = returnDate.atStartOfDay(ZoneId.systemDefault()).toInstant();
 
-        Date newReturnDate = Date.from(instant);
-
-        return newReturnDate;
+        return Date.from(instant);
     }
 
 }

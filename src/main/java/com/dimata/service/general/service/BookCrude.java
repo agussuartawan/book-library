@@ -1,35 +1,28 @@
 package com.dimata.service.general.service;
 
+import com.dimata.service.general.dto.BookData;
 import com.dimata.service.general.model.body.BookBody;
 import com.dimata.service.general.model.entitiy.Book;
 import com.dimata.service.general.repository.BookRepository;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import java.util.List;
-import java.util.Objects;
+import javax.validation.Validator;
+import java.util.*;
 
 @ApplicationScoped
 public class BookCrude {
 
     @Inject
-    BookRepository bookRepository;
+    private BookRepository bookRepository;
 
-    public Book create(BookBody body)
+    @Inject
+    private Validator validator;
+
+    public BookData create(BookData dto)
     {
-        Objects.requireNonNull(body);
-
-        if(!body.isValid()){
-            throw  new IllegalArgumentException("Book not valid!");
-        }
-
-        var book = new Book();
-        book.name = body.name();
-        book.description = body.description();
-        book.author = body.author();
-        book.persist();
-
-        return book;
+        Objects.requireNonNull(dto);
+        return bookRepository.create(dto);
     }
 
     public Book update(BookBody body, long id)
@@ -41,15 +34,15 @@ public class BookCrude {
                 .orElseThrow(() -> new NullPointerException("Book not found."));
 
         if(body.name() != null){
-            book.name = body.name();
+            book.setName(body.name());
         }
 
         if (body.description() != null){
-            book.description = body.description();
+            book.setDescription(body.description());
         }
 
         if (body.author() != null){
-            book.author = body.author();
+            book.setAuthor(body.author());
         }
 
         return book;

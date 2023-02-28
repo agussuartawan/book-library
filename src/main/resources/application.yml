@@ -11,9 +11,9 @@
     datasource:
       db-kind: mysql
       username: root
-      password:
+      password: root
       jdbc:
-        url: jdbc:mysql://localhost:3306/perpus
+        url: jdbc:mysql://localhost:3306/book_library
 
 "%staging":
   quarkus:

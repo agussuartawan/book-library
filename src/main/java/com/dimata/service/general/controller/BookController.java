@@ -1,5 +1,7 @@
 package com.dimata.service.general.controller;
 
+import com.dimata.service.general.dto.BookData;
+import com.dimata.service.general.dto.ResponseData;
 import com.dimata.service.general.model.body.BookBody;
 import com.dimata.service.general.model.entitiy.Book;
 import com.dimata.service.general.service.BookCrude;
@@ -8,21 +10,40 @@ import org.jboss.resteasy.reactive.RestQuery;
 
 import javax.inject.Inject;
 import javax.transaction.Transactional;
+import javax.validation.ConstraintViolation;
+import javax.validation.Validator;
 import javax.ws.rs.*;
+import javax.ws.rs.core.Response;
 import java.util.List;
+import java.util.Set;
 
 @Path("/api/books")
 public class BookController
 {
 
     @Inject
-    BookCrude bookCrude;
+    private BookCrude bookCrude;
+    @Inject
+    private Validator validator;
 
     @POST
     @Transactional
-    public Book create(BookBody body)
+    public Response create(BookData dto)
     {
-        return bookCrude.create(body);
+        ResponseData<BookData> responseData;
+
+        Set<ConstraintViolation<BookData>> violations = validator.validate(dto);
+        if(!violations.isEmpty())
+        {
+            responseData = new ResponseData<>(violations);
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .header("X-Reason", "validation-failed")
+                    .entity(responseData)
+                    .build();
+        }
+
+        responseData = new ResponseData<>(bookCrude.create(dto));
+        return Response.ok(responseData).build();
     }
 
     @PUT

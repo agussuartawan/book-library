@@ -1,12 +1,19 @@
 package com.dimata.service.general.model.entitiy;
 
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
 import java.time.LocalDateTime;
 
+@Setter
+@Getter
+@NoArgsConstructor
 @Entity
 @Table(name = "books")
 public class Book extends PanacheEntityBase {
@@ -14,20 +21,20 @@ public class Book extends PanacheEntityBase {
     @Id
     @GeneratedValue(generator = "dimata_id_gen")
     @Column(name = "book_id")
-    public Long id;
+    private Long id;
 
-    public String name;
+    private String name;
 
-    public String description;
+    private String description;
 
-    public String author;
+    private String author;
 
     @CreationTimestamp
     @Column(name = "created_at")
-    public LocalDateTime createdAt;
+    private LocalDateTime createdAt;
 
     @UpdateTimestamp
     @Column(name = "updated_at")
-    public LocalDateTime updatedAt;
+    private LocalDateTime updatedAt;
 
 }
