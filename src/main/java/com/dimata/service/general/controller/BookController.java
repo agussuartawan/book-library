@@ -2,8 +2,6 @@ package com.dimata.service.general.controller;
 
 import com.dimata.service.general.dto.BookData;
 import com.dimata.service.general.dto.ResponseData;
-import com.dimata.service.general.model.body.BookBody;
-import com.dimata.service.general.model.entitiy.Book;
 import com.dimata.service.general.service.BookCrude;
 import org.jboss.resteasy.reactive.RestPath;
 import org.jboss.resteasy.reactive.RestQuery;
@@ -30,56 +28,78 @@ public class BookController
     @Transactional
     public Response create(BookData dto)
     {
-        ResponseData<BookData> responseData;
-
         Set<ConstraintViolation<BookData>> violations = validator.validate(dto);
         if(!violations.isEmpty())
         {
-            responseData = new ResponseData<>(violations);
             return Response.status(Response.Status.BAD_REQUEST)
                     .header("X-Reason", "validation-failed")
-                    .entity(responseData)
+                    .entity(new ResponseData<>(violations))
                     .build();
         }
 
-        responseData = new ResponseData<>(bookCrude.create(dto));
-        return Response.ok(responseData).build();
+        return Response.ok(
+                new ResponseData<>(bookCrude.create(dto))
+        ).build();
     }
 
     @PUT
     @Path("/{id}")
     @Transactional
-    public Book update(BookBody body, @RestPath long id)
+    public Response update(BookData dto, @RestPath long id)
     {
-        return bookCrude.update(body, id);
+        Set<ConstraintViolation<BookData>> violations = validator.validate(dto);
+        if(!violations.isEmpty())
+        {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .header("X-Reason", "validation-failed")
+                    .entity(new ResponseData<>(violations))
+                    .build();
+        }
+
+        return Response.ok(
+                new ResponseData<>(bookCrude.update(dto, id))
+        ).build();
     }
 
     @DELETE
     @Path("/{id}")
     @Transactional
-    public  void delete(@RestPath long id)
+    public Response delete(@RestPath long id)
     {
         bookCrude.deleteById(id);
+        return Response.ok(
+            new ResponseData<>(true, List.of("Book deleted successfully"), null)
+        ).build();
     }
 
     @GET
     @Path("/find")
-    public List<Book> search(@RestQuery String keyword)
+    public Response search(@RestQuery String keyword)
     {
-        return bookCrude.search(keyword);
+        return Response.ok(
+                new ResponseData<>(true, List.of("Search result in books database"), bookCrude.search(keyword))
+        ).build();
     }
 
     @GET
-    public List<Book> getAll()
+    public Response getAll()
     {
-        return bookCrude.listAll();
+       return Response.ok(
+               new ResponseData<>(true, List.of("List of all books"), bookCrude.listAll())
+       ).build();
     }
 
     @GET
     @Path("/{id}")
-    public Book findById(@RestPath long id)
+    public Response findById(@RestPath long id)
     {
-        return bookCrude.findById(id);
+        return Response.ok(
+                new ResponseData<>(
+                        true,
+                        List.of("Book filtered by id"),
+                        List.of(bookCrude.findById(id))
+                )
+        ).build();
     }
 
 }

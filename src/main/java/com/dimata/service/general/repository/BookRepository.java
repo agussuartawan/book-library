@@ -5,13 +5,13 @@ import com.dimata.service.general.model.entitiy.Book;
 import io.quarkus.hibernate.orm.panache.PanacheRepository;
 
 import javax.enterprise.context.ApplicationScoped;
+import java.util.List;
 
 @ApplicationScoped
 public class BookRepository implements PanacheRepository<Book> {
 
-    public BookData create(BookData dto)
+    public BookData save(Book book, BookData dto)
     {
-        Book book = new Book();
         book.setName(dto.getName());
         book.setAuthor(dto.getAuthor());
         book.setDescription(dto.getDescription());

@@ -1,6 +1,6 @@
 package com.dimata.service.general.service;
 
-import com.dimata.service.general.model.body.MemberBody;
+import com.dimata.service.general.dto.MemberData;
 import com.dimata.service.general.model.entitiy.Member;
 import com.dimata.service.general.repository.MemberRepository;
 
@@ -8,6 +8,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @ApplicationScoped
 public class MemberCrude {
@@ -15,54 +16,76 @@ public class MemberCrude {
     @Inject
     MemberRepository memberRepository;
 
-    public Member create(MemberBody body)
+    public MemberData create(MemberData dto)
     {
-        Objects.requireNonNull(body);
-
-        if(!body.isValid())
-        {
-            throw new IllegalArgumentException("Member not valid!");
-        }
-
-        var member = new Member();
-        member.name = body.name();
-        member.address = body.address();
-        member.persist();
-
-        return member;
+        Objects.requireNonNull(dto);
+        return memberRepository.save(new Member(), dto);
     }
 
-    public Member update(MemberBody body, long id)
+    public MemberData update(MemberData dto, long id)
     {
-        Objects.requireNonNull(body);
+        Objects.requireNonNull(dto);
 
         var member = Member.findByIdOptional(id)
                 .map(Member.class::cast)
                 .orElseThrow(() -> new NullPointerException("Member not found."));
 
-        if(body.name() != null)
-        {
-            member.name = body.name();
-        }
-
-        if(body.address() != null)
-        {
-            member.address = body.address();
-        }
-
-        return member;
+        return memberRepository.save(member, dto);
     }
 
-    public List<Member> listAll()
+    public List<MemberData> listAll()
     {
-        return memberRepository.listAll();
+        return memberRepository.streamAll()
+                .map(member -> {
+                    MemberData dto = new MemberData();
+                    dto.setId(member.getId());
+                    dto.setName(member.getName());
+                    dto.setAddress(member.getAddress());
+                    dto.setCreatedAt(member.getCreatedAt());
+                    dto.setUpdatedAt(member.getUpdatedAt());
+                    return dto;
+                })
+                .collect(Collectors.toList());
     }
 
-    public List<Member> search(String keyword)
+    public List<MemberData> search(String keyword)
     {
         return memberRepository.find(
-                "name LIKE CONCAT('%', ?1,'%') OR address LIKE CONCAT('', ?1, '')"
-                , keyword).list();
+                "name LIKE CONCAT('%', ?1,'%') OR address LIKE CONCAT('', ?1, '')", keyword)
+                .stream()
+                .map(member -> {
+                    MemberData dto = new MemberData();
+                    dto.setId(member.getId());
+                    dto.setName(member.getName());
+                    dto.setAddress(member.getAddress());
+                    dto.setCreatedAt(member.getCreatedAt());
+                    dto.setUpdatedAt(member.getUpdatedAt());
+                    return dto;
+                })
+                .collect(Collectors.toList());
+    }
+
+    public void deleteById(long id)
+    {
+        var member = memberRepository.findByIdOptional(id)
+                .map(Member.class::cast)
+                .orElseThrow(() -> new NullPointerException("Member not found"));
+        memberRepository.delete(member);
+    }
+
+    public MemberData findById(long id)
+    {
+        var member = memberRepository.findByIdOptional(id)
+                .map(Member.class::cast)
+                .orElseThrow(() -> new NullPointerException("Member not found"));
+
+        return new MemberData(
+                member.getId(),
+                member.getName(),
+                member.getAddress(),
+                member.getCreatedAt(),
+                member.getUpdatedAt()
+        );
     }
 
 }

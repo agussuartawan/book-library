@@ -1,7 +1,6 @@
 package com.dimata.service.general.service;
 
 import com.dimata.service.general.dto.BookData;
-import com.dimata.service.general.model.body.BookBody;
 import com.dimata.service.general.model.entitiy.Book;
 import com.dimata.service.general.repository.BookRepository;
 
@@ -9,6 +8,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.validation.Validator;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @ApplicationScoped
 public class BookCrude {
@@ -22,52 +22,75 @@ public class BookCrude {
     public BookData create(BookData dto)
     {
         Objects.requireNonNull(dto);
-        return bookRepository.create(dto);
+        return bookRepository.save(new Book(), dto);
     }
 
-    public Book update(BookBody body, long id)
+    public BookData update(BookData dto, long id)
     {
-        Objects.requireNonNull(body);
-
-        var book = Book.findByIdOptional(id)
+        Objects.requireNonNull(dto);
+        var book = bookRepository.findByIdOptional(id)
                 .map(Book.class::cast)
                 .orElseThrow(() -> new NullPointerException("Book not found."));
 
-        if(body.name() != null){
-            book.setName(body.name());
-        }
-
-        if (body.description() != null){
-            book.setDescription(body.description());
-        }
-
-        if (body.author() != null){
-            book.setAuthor(body.author());
-        }
-
-        return book;
+        return bookRepository.save(book, dto);
     }
 
-    public List<Book> listAll()
+    public List<BookData> listAll()
     {
-        return bookRepository.listAll();
+        return bookRepository.streamAll()
+                .map(book -> {
+                    BookData dto = new BookData();
+                    dto.setId(book.getId());
+                    dto.setName(book.getName());
+                    dto.setDescription(book.getDescription());
+                    dto.setAuthor(book.getAuthor());
+                    dto.setCreatedAt(book.getCreatedAt());
+                    dto.setUpdatedAt(book.getCreatedAt());
+                    return dto;
+                })
+                .collect(Collectors.toList());
     }
 
-    public Book findById(long id)
+    public BookData findById(long id)
     {
-        return bookRepository.findById(id);
+        var book = bookRepository.findByIdOptional(id)
+                .map(Book.class::cast)
+                .orElseThrow(() -> new NullPointerException("Book not found"));
+
+        return new BookData(
+                book.getId(),
+                book.getName(),
+                book.getDescription(),
+                book.getAuthor(),
+                book.getCreatedAt(),
+                book.getUpdatedAt()
+        );
     }
 
-    public List<Book> search(String keyword)
+    public List<BookData> search(String keyword)
     {
         return bookRepository.find(
-                "name LIKE CONCAT('%', ?1, '%') OR description LIKE CONCAT('%', ?1,'%') OR author LIKE CONCAT('%', ?1, '%')"
-                , keyword).list();
+                "name LIKE CONCAT('%', ?1, '%') OR description LIKE CONCAT('%', ?1,'%') OR author LIKE CONCAT('%', ?1, '%')", keyword)
+                .stream()
+                .map(book -> {
+                   BookData dto = new BookData();
+                   dto.setId(book.getId());
+                   dto.setName(book.getName());
+                   dto.setDescription(book.getDescription());
+                   dto.setAuthor(book.getAuthor());
+                   dto.setCreatedAt(book.getCreatedAt());
+                   dto.setUpdatedAt(book.getUpdatedAt());
+                   return dto;
+                })
+                .collect(Collectors.toList());
     }
 
     public void deleteById(long id)
     {
-        bookRepository.deleteById(id);
+        var book = bookRepository.findByIdOptional(id)
+                .map(Book.class::cast)
+                .orElseThrow(() -> new NullPointerException("Book not found"));
+        bookRepository.delete(book);
     }
 
 }

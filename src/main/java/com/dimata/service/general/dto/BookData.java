@@ -1,6 +1,7 @@
 package com.dimata.service.general.dto;
 
 import com.dimata.service.general.model.entitiy.Book;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -12,6 +13,7 @@ import java.time.LocalDateTime;
 @Setter
 @Getter
 @NoArgsConstructor
+@AllArgsConstructor
 @ApplicationScoped
 public class BookData {
 
