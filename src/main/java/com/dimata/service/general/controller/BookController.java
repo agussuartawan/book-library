@@ -16,8 +16,7 @@ import java.util.List;
 import java.util.Set;
 
 @Path("/api/books")
-public class BookController
-{
+public class BookController {
 
     @Inject
     private BookCrude bookCrude;
@@ -26,11 +25,9 @@ public class BookController
 
     @POST
     @Transactional
-    public Response create(BookData dto)
-    {
+    public Response create(BookData dto) {
         Set<ConstraintViolation<BookData>> violations = validator.validate(dto);
-        if(!violations.isEmpty())
-        {
+        if (!violations.isEmpty()) {
             return Response.status(Response.Status.BAD_REQUEST)
                     .header("X-Reason", "validation-failed")
                     .entity(new ResponseData<>(violations))
@@ -45,11 +42,9 @@ public class BookController
     @PUT
     @Path("/{id}")
     @Transactional
-    public Response update(BookData dto, @RestPath long id)
-    {
+    public Response update(BookData dto, @RestPath long id) {
         Set<ConstraintViolation<BookData>> violations = validator.validate(dto);
-        if(!violations.isEmpty())
-        {
+        if (!violations.isEmpty()) {
             return Response.status(Response.Status.BAD_REQUEST)
                     .header("X-Reason", "validation-failed")
                     .entity(new ResponseData<>(violations))
@@ -64,35 +59,31 @@ public class BookController
     @DELETE
     @Path("/{id}")
     @Transactional
-    public Response delete(@RestPath long id)
-    {
+    public Response delete(@RestPath long id) {
         bookCrude.deleteById(id);
         return Response.ok(
-            new ResponseData<>(true, List.of("Book deleted successfully"), null)
+                new ResponseData<>(true, List.of("Book deleted successfully"), null)
         ).build();
     }
 
     @GET
     @Path("/find")
-    public Response search(@RestQuery String keyword)
-    {
+    public Response search(@RestQuery String keyword) {
         return Response.ok(
                 new ResponseData<>(true, List.of("Search result in books database"), bookCrude.search(keyword))
         ).build();
     }
 
     @GET
-    public Response getAll()
-    {
-       return Response.ok(
-               new ResponseData<>(true, List.of("List of all books"), bookCrude.listAll())
-       ).build();
+    public Response getAll() {
+        return Response.ok(
+                new ResponseData<>(true, List.of("List of all books"), bookCrude.listAll())
+        ).build();
     }
 
     @GET
     @Path("/{id}")
-    public Response findById(@RestPath long id)
-    {
+    public Response findById(@RestPath long id) {
         return Response.ok(
                 new ResponseData<>(
                         true,

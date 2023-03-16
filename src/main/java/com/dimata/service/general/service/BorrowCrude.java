@@ -1,12 +1,9 @@
 package com.dimata.service.general.service;
 
-import com.dimata.service.general.model.body.BorrowBody;
-import com.dimata.service.general.model.entitiy.Book;
+import com.dimata.service.general.dto.BorrowData;
+import com.dimata.service.general.dto.mapper.BorrowMapper;
 import com.dimata.service.general.model.entitiy.Borrow;
-import com.dimata.service.general.model.entitiy.Member;
-import com.dimata.service.general.repository.BookRepository;
 import com.dimata.service.general.repository.BorrowRepository;
-import com.dimata.service.general.repository.MemberRepository;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -22,45 +19,38 @@ public class BorrowCrude {
 
     @Inject
     BorrowRepository borrowRepository;
-    @Inject
-    BookRepository bookRepository;
-    @Inject
-    MemberRepository memberRepository;
 
-    public Borrow create(BorrowBody body)
-    {
-        Objects.requireNonNull(body);
+    public Borrow create(BorrowData dto) {
+        Objects.requireNonNull(dto);
 
-        if(!body.isValid())
-        {
-            throw new IllegalArgumentException("Borrow not valid.");
-        }
-
-        var book = bookRepository.findByIdOptional(body.bookId())
-                .map(Book.class::cast)
-                .orElseThrow();
-        var member = memberRepository.findByIdOptional(body.memberId())
-                .map(Member.class::cast)
-                .orElseThrow();
-
-        var borrow = new Borrow();
-        borrow.book = book;
-        borrow.member = member;
-        borrow.borrowDate = body.borrowDate();
-        borrow.term = body.term();
-        borrow.returnDate = calculateReturnDate(body.term(), body.borrowDate());
+        var borrow = BorrowMapper.INSTANCE.toEntity(dto);
+        borrow.returnDate = calculateReturnDate(dto.getTerm(), dto.getBorrowDate());
         borrow.persist();
 
         return borrow;
     }
 
-    public List<Borrow> listAll()
-    {
+    public Borrow update(BorrowData dto, Long id) {
+        Objects.requireNonNull(dto);
+        return new Borrow();
+
+    }
+
+    public List<Borrow> listAll() {
         return borrowRepository.listAll();
     }
 
-    public Date calculateReturnDate(Integer term, Date borrowDate)
-    {
+    public Borrow findById(Long id) {
+        return borrowRepository.findByIdOptional(id)
+                .map(Borrow.class::cast)
+                .orElseThrow(() -> new NullPointerException("Book borrow not found"));
+    }
+
+    public void deleteById(long id) {
+        borrowRepository.deleteById(id);
+    }
+
+    public Date calculateReturnDate(Integer term, Date borrowDate) {
         LocalDate newBorrowDate = borrowDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
         LocalDate returnDate = newBorrowDate.plusDays(term);
 

@@ -1,6 +1,7 @@
 package com.dimata.service.general.service;
 
 import com.dimata.service.general.dto.MemberData;
+import com.dimata.service.general.dto.mapper.MemberMapper;
 import com.dimata.service.general.model.entitiy.Member;
 import com.dimata.service.general.repository.MemberRepository;
 
@@ -16,14 +17,12 @@ public class MemberCrude {
     @Inject
     MemberRepository memberRepository;
 
-    public MemberData create(MemberData dto)
-    {
+    public MemberData create(MemberData dto) {
         Objects.requireNonNull(dto);
         return memberRepository.save(new Member(), dto);
     }
 
-    public MemberData update(MemberData dto, long id)
-    {
+    public MemberData update(MemberData dto, long id) {
         Objects.requireNonNull(dto);
 
         var member = Member.findByIdOptional(id)
@@ -33,8 +32,7 @@ public class MemberCrude {
         return memberRepository.save(member, dto);
     }
 
-    public List<MemberData> listAll()
-    {
+    public List<MemberData> listAll() {
         return memberRepository.streamAll()
                 .map(member -> {
                     MemberData dto = new MemberData();
@@ -48,10 +46,9 @@ public class MemberCrude {
                 .collect(Collectors.toList());
     }
 
-    public List<MemberData> search(String keyword)
-    {
+    public List<MemberData> search(String keyword) {
         return memberRepository.find(
-                "name LIKE CONCAT('%', ?1,'%') OR address LIKE CONCAT('', ?1, '')", keyword)
+                        "name LIKE CONCAT('%', ?1,'%') OR address LIKE CONCAT('', ?1, '')", keyword)
                 .stream()
                 .map(member -> {
                     MemberData dto = new MemberData();
@@ -65,27 +62,17 @@ public class MemberCrude {
                 .collect(Collectors.toList());
     }
 
-    public void deleteById(long id)
-    {
+    public void deleteById(long id) {
         var member = memberRepository.findByIdOptional(id)
                 .map(Member.class::cast)
                 .orElseThrow(() -> new NullPointerException("Member not found"));
         memberRepository.delete(member);
     }
 
-    public MemberData findById(long id)
-    {
-        var member = memberRepository.findByIdOptional(id)
+    public MemberData findById(long id) {
+        return MemberMapper.INSTANCE.toDTO(memberRepository.findByIdOptional(id)
                 .map(Member.class::cast)
-                .orElseThrow(() -> new NullPointerException("Member not found"));
-
-        return new MemberData(
-                member.getId(),
-                member.getName(),
-                member.getAddress(),
-                member.getCreatedAt(),
-                member.getUpdatedAt()
-        );
+                .orElseThrow(() -> new NullPointerException("Member not found")));
     }
 
 }

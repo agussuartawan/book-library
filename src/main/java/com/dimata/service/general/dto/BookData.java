@@ -1,19 +1,9 @@
 package com.dimata.service.general.dto;
 
-import com.dimata.service.general.model.entitiy.Book;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
 import javax.enterprise.context.ApplicationScoped;
 import javax.validation.constraints.NotBlank;
 import java.time.LocalDateTime;
 
-@Setter
-@Getter
-@NoArgsConstructor
-@AllArgsConstructor
 @ApplicationScoped
 public class BookData {
 
@@ -32,13 +22,54 @@ public class BookData {
 
     private LocalDateTime updatedAt;
 
-    public BookData(Book book)
-    {
-        this.id = book.getId();
-        this.name = book.getName();
-        this.description = book.getDescription();
-        this.author = book.getAuthor();
-        this.createdAt = book.getCreatedAt();
-        this.updatedAt = book.getUpdatedAt();
+    public BookData() {
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getAuthor() {
+        return author;
+    }
+
+    public void setAuthor(String author) {
+        this.author = author;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
     }
 }
