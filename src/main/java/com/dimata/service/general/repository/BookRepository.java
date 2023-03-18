@@ -11,6 +11,8 @@ import javax.enterprise.context.ApplicationScoped;
 public class BookRepository implements PanacheRepository<Book> {
 
     public BookData save(Book book, BookData dto) {
+        book = BookMapper.INSTANCE.toEntity(dto);
+        book.persistAndFlush();
         return BookMapper.INSTANCE.toDTO(book);
     }
 
